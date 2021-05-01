@@ -1,7 +1,7 @@
 ## Warning: This project was made in 2016 during 11th grade in Portugal in partnership with a friend. it's here for preservation purposes only.
 
 ## About
-This repository contains scripts for the Lego Mindstorms. They have many purposes, but the main goal of this project was to make a cane out  ofLegos to assist the visual impaired. The robot spoke "Left", "Right" depending on the color found on the floor. When in the correct position, the robot would speak "Forward". The specific script for this can be found in `Projeto/TwoSensorV3.sb`.
+This repository contains scripts for the Lego Mindstorms. They have many purposes, but the main goal of this project was to make a cane out of Legos to assist the visual impaired. The robot spoke "Left", "Right" depending on the color found on the floor. When in the correct position, the robot would speak "Forward". The specific script for this can be found in `Projeto/TwoSensorV3.sb`.
 
 
 ## File structure
