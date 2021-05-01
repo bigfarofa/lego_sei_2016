@@ -1,0 +1,17 @@
+LCD.Clear()
+loop=0  
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,2)
+color1=Sensor.ReadRawValue(3, 0)
+perc = Sensor.ReadPercent(3)
+LCD.Write(5, 0, "Percentagem = "+color1)
+Program.Delay(2000)
+loop=0
+
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,0)
+color2=sensor.ReadPercent(3)

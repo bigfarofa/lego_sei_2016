@@ -1,0 +1,30 @@
+LCD.Clear()
+Timer.Interval = 1000
+loop=0  
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,2)
+color1=Sensor.ReadRawValue(3, 0)
+
+Program.Delay(2000)
+loop=0
+
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,2)
+color2=sensor.ReadRawValue(3,0)
+
+LCD.Write(5,0,color1)
+LCD.Write(5,15,color2)
+Program.Delay(6000)
+
+
+Timer.Tick = Count
+sub Count
+  c = c+1
+  LCD.Write(5, 30, "Seg="+c)
+EndSub
+
+'testes

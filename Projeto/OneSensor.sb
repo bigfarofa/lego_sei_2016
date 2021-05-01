@@ -1,0 +1,33 @@
+loop=0  
+c = 0
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,2)
+color1=Sensor.ReadRawValue(3,0)
+LCD.Clear()
+LCD.Write(5, 0, "Color1="+color1)
+x = 1
+While x = 1
+  valor = Sensor.ReadRawValue(3, 0)
+  If valor <> color1 Then
+    Program.Delay(10)
+    c = c+1
+    LCD.Write(5, 15, c)
+    If c > 50 And c <70 then
+      Speaker.Play(15, "sounds/Backing alert")
+      Program.Delay(500)
+      ElseIf c >= 70 then
+      Speaker.Stop()
+      Speaker.Play(70, "sounds/Backing alert")
+      Program.Delay(500)
+    EndIf
+  EndIf
+  If valor = color1 Then
+    c = 0
+    Speaker.Stop()
+  EndIf
+  
+EndWhile
+
+

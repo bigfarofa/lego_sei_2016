@@ -1,0 +1,28 @@
+LCD.Clear()
+loop=0  
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,0)
+color1=Sensor.ReadPercent(3)
+
+Program.Delay(2000)
+loop=0
+
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,0)
+color2=sensor.ReadPercent(3)
+
+meio=(color1-color2)/2+color2
+
+Program.Delay(3000)
+  valor=Sensor.ReadPercent(3)
+
+Program.Delay(2000)
+LCD.Text(1,5,5,1,"Color1="+color1)
+LCD.Text(1,5,20,1,"Color2="+color2)
+LCD.Text(1,5,35,1,"Meio="+meio)
+LCD.Text(1,5,50,1,"Valor="+valor)
+Program.Delay(20000)

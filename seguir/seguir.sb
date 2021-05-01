@@ -1,0 +1,72 @@
+c = 0
+loop=0  
+Timer.Interval = 1000
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,0)
+color1=Sensor.ReadPercent(3)
+
+Program.Delay(2000)
+loop=0
+
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,0)
+color2=sensor.ReadPercent(3)
+
+   meio=(color1-color2)/2+color2
+  
+  x=1  
+  Program.Delay(5000)
+  Motor.Start("B",20)
+  Motor.Start("C",20)  
+While x=1
+  LCD.Clear()
+  LCD.Write(5, 0, "Color1="+color1)
+  LCD.Write(5, 15, "Color2="+color2)
+  LCD.Write(5, 30, "meio="+meio)
+  LCD.Write(5, 45, "Valor="+valor)
+  valor=Sensor.ReadPercent(3)
+  If valor>meio Then
+    Motor.Start("C",5)
+    f1=1 
+    LCD.Write(5, 60, "Status=F1")
+  EndIf 
+  
+  If valor<meio Then
+    Motor.Start("B",5)
+    f2=1
+  LCD.Write(5, 60, "Status=F2")  
+    
+  EndIf 
+  If f1 = 1 Then
+    Timer.Tick = count
+    If c >= 3 Then
+      Motor.Start("B", 0)
+      Motor.Start("C", 0)
+      LCD.Clear()
+      LCD.Write(5,0,"PAROU F1")
+    EndIf
+  EndIf 
+    If f2 = 1 Then
+    Timer.Tick = count
+    If c >= 3 Then
+      Motor.Start("B", 0)
+      Motor.Start("C", 0)
+      LCD.Clear()
+      LCD.Write(5,0,"PAROU F2")
+    EndIf
+  EndIf
+  Motor.Start("B",20)
+  Motor.Start("C",20)
+  c = 0
+  f1=0
+  f2=0
+EndWhile
+Sub count
+c=c+1
+LCD.Write(5, 60, "Seg="+c)
+EndSub
+  'seguir com a luminusidade

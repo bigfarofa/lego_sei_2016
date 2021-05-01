@@ -1,0 +1,106 @@
+TouchSensor = 1
+ColorSensorLeft = 4
+ColorSensorRight = 3
+DistanceSensor = 2
+LineColorLeft = 0
+LineColorRight = 0
+
+EstadoNaLinha = 0
+EstadoNaLinhaFugirEsq = 1
+EstadoNaLinhaFugirDir = 2
+EstadoFugirEsq = 3
+EstadoFugirDir = 4
+
+CalibrateColor()	' Calibrate the line color
+
+estado = 0
+tmp = 0
+tolerance = 10
+
+LCD.Clear()
+fim = "false"
+While fim = "false"
+  LCD.StopUpdate()
+  LCD.Clear()
+  'Read sensors
+  ColorLeft = Sensor.ReadRawValue(ColorSensorLeft, 0)
+  ColorRight = Sensor.ReadRawValue(ColorSensorRight, 0)
+  Distance = Sensor.ReadPercent(DistanceSensor)
+  
+  LCD.Write(5, 0, "Sensor Esq=" + ColorLeft)
+  LCD.Write(45, 0, "Sensor Dir=" + ColorRight)
+  LCD.Update()
+  
+  ' Collision alert
+  If dist <= 50 Then
+    Speaker.Play(5, "sounds/Horn 1")
+    Program.Delay(700)
+  EndIf
+  
+  If ColorRight = LineColorRight and ColorLeft = LineColorLeft Then
+    estado = EstadoNaLinha
+    tmp = 0		' reset counter
+    Speaker.Stop()
+  ElseIf ColorRight = LineColorRight then
+  	estado = EstadoNaLinhaFugirEsq
+  	tmp = 0		' reset counter
+    Speaker.Stop()
+  ElseIf ColorLeft = LineColorLeft then
+  	estado = EstadoNaLinhaFugirDir
+  	tmp = 0		' reset counter
+    Speaker.Stop()
+  Else				' Fora da linha
+  	If estado = EstadoNaLinhaFugirEsq Then
+    	estado = EstadoFugirEsq
+    	tmp = 1
+    	LCD.Write(5, 15, tmp)
+    ElseIf estado = EstadoNaLinhaFugirDir Then
+    	estado = EstadoFugirDir
+    	tmp = 1
+    	LCD.Write(5, 15, tmp)
+    ElseIf estado = EstadoFugirEsq then
+    	tmp = tmp +1
+    	' Alertas aumentam de intensidade
+    	If tmp < 30 then
+      		Speaker.Play(15, "sounds/Tick tack")
+      	ElseIf tmp<60 then
+      		Speaker.Play(50, "sounds/Tick tack")
+      	Else
+      		Speaker.Play(100, "sounds/Tick tack")
+      	EndIf
+      	Program.Delay(500)
+      	Speaker.Stop() 
+    ElseIf estado = EstadoFugirDir then
+    	tmp = tmp +1
+    	' Alertas aumentam de intensidade
+    	If tmp < 30 then
+      		Speaker.Play(15, "sounds/Backing alert")
+      	ElseIf tmp<60 then
+      		Speaker.Play(50, "sounds/Backing alert")
+      	Else
+      		Speaker.Play(100, "sounds/Backing alert")
+      	EndIf
+      	Program.Delay(500)
+      	Speaker.Stop()  
+    EndIf
+  EndIf
+EndWhile
+
+Sub CalibrateColor
+	
+	' left sensor
+	pressed = 0  
+	Sensor.SetMode(ColorSensorLeft,2)	' detect color mode
+	While pressed = 0
+  		pressed = Sensor.ReadPercent(TouchSensor)
+  		LineColorLeft = Sensor.ReadRawValue(ColorSensorLeft,0)
+	EndWhile
+	
+	' right sensor
+	pressed = 0
+	Sensor.SetMode(ColorSensorRight,2)	' detect color mode
+	While pressed = 0
+  		pressed = Sensor.ReadPercent(TouchSensor)
+  		LineColorRight = Sensor.ReadRawValue(ColorSensorRight,0)
+	EndWhile
+EndSub

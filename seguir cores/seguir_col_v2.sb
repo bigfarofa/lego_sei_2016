@@ -1,0 +1,256 @@
+loop=0  
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,2)
+colour1=Sensor.ReadRawValue(3,0)
+loop=0
+Program.Delay(3000)
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,2)
+colour2=Sensor.ReadRawValue(3,0)
+  
+  x=1  
+  Program.Delay(5000)
+  Motor.Start("B",10)
+  Motor.Start("C",10)
+  While x=1
+    dist = Sensor.ReadPercent(2)
+    valor = Sensor.ReadRawValue(3, 0)
+    LCD.Clear()
+    LCD.Write(5, 0, "Distancia:"+dist)
+    If dist <= 50 Then
+      Motor.Start("B", 0)
+      Motor.Start("C", 0)
+      Program.Delay(3000)
+      dist = Sensor.ReadPercent(2)
+      If dist <= 50 Then
+        LCD.Clear()
+        LCD.Write(5, 0, "ALERTA DE OBSTÁCULO")
+        Motor.Start("B", 20)
+        Program.Delay(2000)
+        Motor.Start("C", 20)
+        Program.Delay(2000)
+        While valor <> colour1
+          valor = Sensor.ReadRawValue(3, 0)
+          Motor.Start("B", 10)
+          Motor.Start("C", 25)
+        EndWhile
+        LCD.Clear()
+        LCD.Write(5, 0, "Mudando Rota")
+        'While valor <> colour2
+        '  valor = Sensor.ReadRawValue(3, 0)
+       ' Motor.Start("B",20)
+       ' Motor.Start("C",0)
+     ' EndWhile
+      EndIf
+    EndIf
+        
+      
+    LCD.Clear()
+ '  LCD.Write(5, 0, "Color1="+colour1)
+  ' LCD.Write(5, 15, "Color2="+colour2)
+  ' LCD.Write(5, 45,"Valor="+valor)
+    'direita
+    If valor = colour1 then
+      LCD.Clear()
+      LCD.Write(5,0,"Colour1")
+      Program.Delay(10)
+      Motor.Start("C",5)
+      direita = direita + 1
+      esquerda = 0
+    EndIf
+    'esquerda
+    If valor = colour2 then
+      LCD.Clear()
+      LCD.Write(5, 0, "Colour2")
+      Program.Delay(10)
+      Motor.Start("B",5)
+      esquerda = esquerda + 1
+      direita = 0
+    EndIf
+    'Se for muito para DIREITA
+    If direita = 115 Then
+      esquerda = 0
+      Motor.Start("B",25)
+      Motor.Start("C", 40)
+      While valor <> colour1 Or esquerda <> 0
+        LCD.StopUpdate()
+        LCD.Clear()
+        LCD.Write(5, 0, "DirEsq esq="+esquerda)
+        Program.Delay(10)
+        valor = Sensor.ReadRawValue(3, 0)
+        LCD.Write(5, 0, "Esquerda IF")
+        LCD.Write(5, 15, "Cor1:"+colour1)
+        LCD.Write(5, 30, "Valor:"+valor)
+        esquerda = esquerda + 1
+        If esquerda = 800 Then
+          LCD.Write(5, 15, "ErroEsqDir")
+          ErroEsqDir()
+        EndIf
+        LCD.Write(5, 30, "Esquerda="+esquerda)
+        EndWhile
+     If esquerda <> 0 then      
+      While valor <> colour2
+        valor = Sensor.ReadRawValue(3, 0)
+        LCD.Clear()
+        LCD.Write(5, 0, "Esquerda IF2")
+        LCD.Write(5, 15, "Cor1:"+colour2)
+        LCD.Write(5, 30, "Valor:"+valor)
+      EndWhile
+      LCD.Clear()
+      LCD.Write(5, 0, "RetaDireita")
+      Motor.Start("B", -30)
+      Motor.Start("C", -30)
+      Program.Delay(1000)
+      Motor.Start("B", 90)
+      Motor.Start("C", 30)
+      Program.Delay(1500)
+      'While valor <> colour1
+        'valor = Sensor.ReadRawValue(3, 0)
+        'Motor.Start("B", 25)
+        'Motor.Start("C", 15)
+        'EndWhile
+      EndIf
+      
+      direita = 0
+    EndIf
+    '---- Se for Muito para ESQUERDA ---
+    If esquerda = 115 then
+      direita = 0
+      Motor.Start("B", 40)
+      Motor.Start("C", 25)
+      While valor <> colour1 Or direita <> 0
+        LCD.StopUpdate()
+        LCD.Clear()
+        LCD.Write(5, 0, "ESQ dir:"+direita)
+        Program.Delay(10)
+        valor = Sensor.ReadRawValue(3, 0)
+
+        LCD.Write(5, 15, "Direita IF")
+        LCD.Write(5, 30, "Cor1:"+colour1)
+        LCD.Write(5, 45,"Valor:"+valor)
+        direita = direita + 1
+        If direita = 800 Then
+          LCD.Write(5, 60, "ErroDirEsq")
+          ErroDirEsq()
+        endIf
+        LCD.Write(5, 75, "direita="+direita)
+      EndWhile
+   If direita <> 0 then
+      While valor <> colour2
+        valor = Sensor.ReadRawValue(3, 0)
+        LCD.Clear()
+        LCD.Write(5, 0, "Direita IF2")
+        LCD.Write(5, 15, "Cor1:"+colour2)
+        LCD.Write(5, 30, "Valor:"+valor)
+      EndWhile
+      LCD.Clear()
+      LCD.Write(5, 0, "RetaEsquerda")
+    While valor <> colour1 
+      valor = Sensor.ReadRawValue(3, 0)
+      Motor.Start("B", -30)
+      Motor.Start("C", -30)
+    EndWhile
+    Motor.Start("BC", 20)
+    Program.Delay(1000)
+    While valor <> colour1
+      valor = Sensor.ReadRawValue(3, 0)
+      Motor.Start("B", 30)
+      Motor.Start("C", 90)
+    EndWhile
+      'While valor <> colour1
+        'valor = Sensor.ReadRawValue(3, 0)
+        'Motor.Start("B", 5)
+        'Motor.Start("C", 25)
+      'EndWhile
+  EndIf  
+      esquerda = 0
+    EndIf    
+    Motor.Start("B", 27)
+    Motor.Start("C", 27)
+  EndWhile
+  
+  
+    '--- SUB-ROTINAS ---
+  Sub ErroEsqDir
+      Motor.Start("B", 40)
+      Motor.Start("C", 25)
+      While valor <> colour1
+        valor = Sensor.ReadRawValue(3, 0)
+        LCD.Clear()
+        LCD.Write(5, 0, "Direita IF")
+        LCD.Write(5, 15, "Cor1:"+colour1)
+        LCD.Write(5, 30,"Valor:"+valor)
+      EndWhile
+      While valor <> colour2
+        valor = Sensor.ReadRawValue(3, 0)
+        LCD.Clear()
+        LCD.Write(5, 0, "Direita IF2")
+        LCD.Write(5, 15, "Cor1:"+colour2)
+        LCD.Write(5, 30, "Valor:"+valor)
+      EndWhile
+      LCD.Clear()
+      LCD.Write(5, 0, "RetaEsquerda")
+    While valor <> colour1 
+      valor = Sensor.ReadRawValue(3, 0)
+      Motor.Start("B", -30)
+      Motor.Start("C", -30)
+    EndWhile
+    Motor.Start("BC", 20)
+    Program.Delay(1000)
+    While valor <> colour1
+      valor = Sensor.ReadRawValue(3, 0)
+      Motor.Start("B", 30)
+      Motor.Start("C", 90)
+    EndWhile
+      'While valor <> colour1
+      '  valor = Sensor.ReadRawValue(3, 0)
+      '  Motor.Start("B", 5)
+      '  Motor.Start("C", 25)
+     ' EndWhile  
+        
+      esquerda = 0
+  EndSub
+  Sub ErroDirEsq
+      Motor.Start("B",25)
+      Motor.Start("C", 40)
+      While valor <> colour1
+        valor = Sensor.ReadRawValue(3, 0)
+        LCD.Clear()
+        LCD.Write(5, 0, "Esquerda IF")
+        LCD.Write(5, 15, "Cor1:"+colour1)
+        LCD.Write(5, 30, "Valor:"+valor)
+      EndWhile
+      While valor <> colour2
+        valor = Sensor.ReadRawValue(3, 0)
+        LCD.Clear()
+        LCD.Write(5, 0, "Esquerda IF2")
+        LCD.Write(5, 15, "Cor1:"+colour2)
+        LCD.Write(5, 30, "Valor:"+valor)
+      EndWhile
+      LCD.Clear()
+      While valor <> colour1
+      valor = Sensor.ReadRawValue(3, 0)
+      LCD.Write(5, 0, "RetaDireita")
+      Motor.Start("B", -30)
+      Motor.Start("C", -30)
+    EndWhile
+      Motor.Start("BC", 20)
+      Program.Delay(1000)
+    While valor <> colour1
+      valor = Sensor.ReadRawValue(3, 0)
+      Motor.Start("B", 90)
+      Motor.Start("C", 30)
+    EndWhile
+    
+     ' While valor <> colour1
+       ' valor = Sensor.ReadRawValue(3, 0)
+       ' Motor.Start("B", 25)
+        'Motor.Start("C", 15)
+     ' EndWhile       
+      direita = 0
+    EndSub
+ 'seguir com cores

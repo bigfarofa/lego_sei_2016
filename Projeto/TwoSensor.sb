@@ -1,0 +1,63 @@
+loop=0  
+estado = 0
+tmp = 0
+While loop=0
+  loop=Sensor.ReadPercent(1)
+EndWhile
+Sensor.SetMode(3,2)
+color1=Sensor.ReadRawValue(3,0)
+LCD.Clear()
+LCD.Write(5, 0, "Color1="+color1)
+loop = 1
+While loop = 1
+  Sensor.SetMode(3, 2)
+  valor = Sensor.ReadRawValue(3, 0)
+  Sensor.SetMode(4, 2)
+  valor2 = Sensor.ReadRawValue(4, 0)
+  dist = Sensor.ReadPercent(2)
+  LCD.StopUpdate()
+  LCD.Clear()
+  LCD.Write(5, 0, "Sensor Esq="+valor2)
+  LCD.Write(45, 0, "Sensor Dir="+valor)
+  LCD.Update()
+  If dist <= 50 Then
+    Speaker.Play(5, "sounds/Horn 1")
+    Program.Delay(700)
+  EndIf
+  If valor <> color1 And estado <> 2 Then
+    estado = 1
+    Program.Delay(10)
+    tmp = tmp+1
+    LCD.Write(5, 15, tmp)
+    If tmp > 50 And tmp <70 then
+      Speaker.Play(15, "sounds/Backing alert")
+      Program.Delay(500)
+      ElseIf tmp >= 70 then
+      Speaker.Stop()
+      Speaker.Play(70, "sounds/Backing alert")
+      Program.Delay(500)
+    EndIf
+  EndIf
+  If valor2 <> color1 And estado <> 1 Then
+    estado = 2
+    Program.Delay(10)
+    tmp = tmp+1
+    LCD.Write(5, 15, tmp)
+    If tmp > 50 And tmp <70 then
+      Speaker.Play(15, "sounds/Tick tack")
+      Program.Delay(500)
+      ElseIf tmp >= 70 then
+      Speaker.Stop()
+      Speaker.Play(70, "sounds/Tick tack")
+      Program.Delay(500)
+    EndIf
+  EndIf
+  If valor = color1 and valor2 = color1 Then
+    estado = 0
+    tmp = 0
+    Speaker.Stop()
+  EndIf
+  
+EndWhile
+
+

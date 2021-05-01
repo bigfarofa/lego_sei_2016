@@ -1,0 +1,29 @@
+
+   LCD.Write(0,0,"Color 1")
+   Sensor.SetMode(1)
+   While button <> 100
+     button= Sensor.ReadPercent(1)
+   EndWhile 
+   Sensor.SetMode(3,0)
+   
+     col1 = Sensor.ReadPercent(3)
+   LCD.Clear()
+   LCD.Write(0,0"Color 2")
+   Sensor.SetMode(1)
+   While button <> 100
+     button= Sensor.ReadPercent(1)
+   EndWhile
+   Sensor.SetMode(3,0)
+    
+   col2=Sensor.ReadPercent(3)
+   
+   mid(col1-col2)/2+col2
+Program.Delay(3000)
+
+SC=50 
+SB=50 
+If col1>mid Then
+  SB=20
+Else
+  SC=20 
+EndIf

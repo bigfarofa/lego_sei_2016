@@ -1,0 +1,11 @@
+loop=0
+LCD.Clear()
+Sensor.SetMode(2, 0)
+While loop=0
+    LCD.StopUpdate() 
+    LCD.Clear()
+    LCD.Text(1,45,55,2,Sensor.ReadPercent(2)+" cm")
+    LCD.Update()
+    Speaker.Play(10, "sounds/Backing alert")
+    Program.Delay(2000)
+EndWhile

@@ -1,0 +1,175 @@
+pressed=0 'flag para os ciclos 
+estado = 0 'distingue se esta a virar para a esquerda ou para a direita
+tmp = 0 'contador
+
+'chama a sub-rotina(calibra a cor)
+CalibrateColor()
+
+'Informação das Cores
+Program.Delay(1000)
+LCD.Clear()
+LCD.Write(5, 0, "Clique no Botao")
+LCD.Write(5, 15, "para comecar")
+LCD.Write(30, 30, "-----Status-----")
+LCD.Write(5, 45, "ColorLine="+colorLine)
+LCD.Write(5, 60, "ColorFrente="+colorFrente)
+LCD.Write(5, 75, "ColorDireita="+colorDireita)
+LCD.Write(5, 90, "ColorEsquerda="+colorEsquerda)
+
+'Carregar no botão para o ciclo começar
+pressed = 0
+While pressed = 0
+  pressed = Sensor.ReadPercent(1)
+EndWhile
+'-------------------------
+
+LCD.Clear()
+LCD.Write(5, 0, "ColorLine="+colorLine)
+loop = 1
+While loop = 1
+  Sensor.SetMode(3, 2)' lê com o sensor da direita
+ SensorDir = Sensor.ReadRawValue(3, 0)
+  Sensor.SetMode(4, 2)' lê com o sensor da esquerda
+ SensorEsq = Sensor.ReadRawValue(4, 0)
+ dist = Sensor.ReadPercent(2)'leitor de obstaculos
+  LCD.StopUpdate() 'Inicio Informação
+   LCD.Clear() 
+   LCD.Write(5, 0, "Sensor Esq="+SensEsq)
+   LCD.Write(5, 15, "Sensor Dir="+SensDir) 
+   LCD.Write(5, 30, "Distancia="+dist) 
+  LCD.Update() 'Fim Informação
+   
+'Inicio da condição se existe obstaculos   
+   If dist <= 50 Then
+    Speaker.Play(5, "sounds/Horn 1")
+    Program.Delay(700)
+  EndIf
+'Fim da condição se existe obstaculos
+  
+'Inicio da condiçao de estiver a virar muito para a Direita
+ If SensorDir <> colorLine And estado <> 2 Then'se o valor que o sensor da  direita le for um valo diferente da cor da linha e se nao estiver a virar para a esquerda
+    estado = 1 ' diz que esta a virar para a direita
+    Program.Delay(10) 
+    tmp = tmp+1 ' Incrementa de 10 em 10 milesimos (sendo 100 = 1seg)
+    LCD.Write(5, 15, tmp)'informação
+    If tmp > 20 And tmp <70 then' se estiver a se desviar da linha
+      Speaker.Play(15, "sounds/Backing alert")'produz o son com um volume de 15
+      Program.Delay(500)
+    ElseIf tmp >= 70 then' se não ouver correção passado 70 incrementos
+      Speaker.Stop()
+      Speaker.Play(70, "sounds/Backing alert")'produz o son com um volume de 70
+      Program.Delay(500)
+    EndIf
+ EndIf
+ 'Fim da condição
+
+'Inicio da condiçao de estiver a virar muito para a Esquerda
+ If SensorEsq <> colorLine And estado <> 1 Then'se o valor que o sensor da  esquerda le for um valo diferente da cor da linha e se nao estiver a virar para a direita
+    estado = 2'diz que esta a virar para a esquerda
+    Program.Delay(10)
+    tmp = tmp+1'Incrementa o contador de 10 em 10 milesimos de seg
+    LCD.Write(5, 15, tmp)'informação
+     If tmp > 20 And tmp <70 then' se estiver a se desviar da linha
+      Speaker.Play(15, "sounds/Tick tack")
+      Program.Delay(500)
+     ElseIf tmp >= 70 then'se não ouver correção passado 70 incrementos
+      Speaker.Stop()
+      Speaker.Play(70, "sounds/Tick tack")'produz o son com um volume de 70
+      Program.Delay(500)
+    EndIf
+ EndIf
+'Fim da condição
+ 
+'Condição se estiver na linha branca
+If SensorDir = colorLine and SensorEsq = colorLine Then ' se ambos os sensores estiverem em cima da linha                      
+    estado = 0         '
+    tmp = 0            'Reseta o estado e contador e para o Speaker
+    Speaker.Stop()     '
+EndIf
+'Fim condição
+
+'Condição em frente
+  If SensorDir = colorFrente Or SensorEsq = colorFrente Then'se algum dos sensores ler o valor defenido para em frente
+    loop = 0
+    Speaker.Stop()
+    Speaker.Play(50, "sounds/Forward")'diz "Forward!"
+    Program.Delay(700)
+  EndIf
+  If SensorDir = colorFrente Or SensorEsq = colorFrente Then ' Razões de Teste
+    Program.Delay(3000)
+  EndIf
+'fim Condição  
+
+'Condição direita
+If SensorDir=colorDireita Or SensorEsq=colorDireita Then' se algum dos sensores ler a cor defenida para a direita
+    loop=0
+    Speaker.Stop()
+    Speaker.Play(50,"sounds/Right")'diz"Right !"
+    Program.Delay(700)  
+EndIf
+If SensorDir=colorEsquerda Or SensorEsq=colorEsquerda Then' se algum dos sensores ler a cor defenida para a direita
+    loop=0
+    Speaker.Stop()
+    Speaker.Play(50,"sounds/Left")'diz"Left !"
+    Program.Delay(700)  
+EndIf
+   
+EndWhile
+
+'Calibra o sensor e predefine as cores 
+Sub CalibrateColor
+  Sensor.SetMode(3, 2)
+'-------Inicio calibaração ColorLine(cor da linha linha a seguir)------------------
+While pressed=0
+  LCD.StopUpdate()
+    LCD.Clear()
+    LCD.Write(5, 0, "ColorLine= "+ Sensor.ReadRawValue(3, 0))
+    LCD.Update()
+    pressed=Sensor.ReadPercent(1)
+  EndWhile
+    Sensor.SetMode(3,2)
+     colorLine=Sensor.ReadRawValue(3,0)
+'--------Fim calibração ColorLine(cor da linha)
+
+'-------Inicio calibaração ColorFim(cor em que o robo vai dizer "Forward")------------------
+     pressed = 0
+     Program.Delay(1250)
+     While pressed = 0
+       LCD.StopUpdate()
+       LCD.Clear()
+       LCD.Write(5, 0, "ColorFrente= "+Sensor.ReadRawValue(3, 0))
+       LCD.Update()
+       pressed = Sensor.ReadPercent(1)
+       
+   EndWhile
+     colorFrente = Sensor.ReadRawValue(3,0)
+'-------Fim calibaração ColorFim(cor em que o robo vai dizer "Forward!")--------------------
+
+'-------Inicio calibaração ColorDireita(cor em que o robo vai dizer "right")------------------
+     pressed = 0
+     Program.Delay(1250)
+     While pressed=0
+       LCD.StopUpdate()
+       LCD.Clear()
+       LCD.Write(5, 0, "ColorDireita= "+Sensor.ReadRawValue(3, 0))
+       LCD.Update()
+     pressed=sensor.ReadPercent(1)
+    EndWhile
+    colorDireita=sensor.ReadRawValue(3,0)
+'-------Fim calibaração ColorDireita(cor em que o robo vai dizer "right")------------------
+    
+'-------Inicio calibaração ColorEsquerda(cor em que o robo vai dizer "left")------------------  
+     pressed = 0
+     Program.Delay(1250)
+     While pressed = 0
+       LCD.StopUpdate()
+       LCD.Clear()
+       LCD.Write(5, 0, "ColorEsquerda = "+Sensor.ReadRawValue(3, 0))
+       pressed = Sensor.ReadPercent(1)
+       LCD.Update()
+   EndWhile
+     colorEsquerda = Sensor.ReadRawValue(3,0)
+'-------Fim calibaração ColorEsquerda(cor em que o robo vai dizer "left")------------------
+EndSub
+
+

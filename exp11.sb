@@ -1,0 +1,7 @@
+Sensor.SetMode(3, 4)
+col = Sensor.ReadRaw(3, 2)
+cor[0] = Math.Round(col[0] * 255/350)
+cor[1] = Math.Round(col[1] * 255/350)
+cor[2] = Math.Round(col[2] * 255/140)
+
+

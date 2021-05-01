@@ -1,0 +1,11 @@
+ sub calibrate
+Sensor.SetMode(3,0)   
+   LCD.Write(0,0,"Color 1")
+   col1=Sensor.ReadPercent(3)
+ 
+   Program.Delay(500)
+ 
+   LCD.Clear()
+   LCD.Write(0,0"Color 2")
+   col2=Sensor.ReadRawValue(3)
+ EndSub
